@@ -135,7 +135,7 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
         swiperefresh.setRefreshing(true);
 
         // se tiver conexao faz get, senao pega do sqlite
-        if (true) {
+        if (isConnected()) {
             HttpRetro.getCountryClient().getUbs().enqueue(new Callback<List<Countries>>() {
                 public void onResponse(Call<List<Countries>> call, Response<List<Countries>> response) {
                     if (response.isSuccessful()) {
@@ -165,7 +165,7 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
 
         }else {
             swiperefresh.setRefreshing(false);
-            //Toast.makeText(this,"Sem Conexão, listando Ubs do banco...",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),"Sem Conexão, listando Ubs do banco...",Toast.LENGTH_SHORT).show();
             getDataSqlite();
         }
 
