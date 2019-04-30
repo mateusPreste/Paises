@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,7 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
     private ListView listView;
     private SwipeRefreshLayout swiperefresh;
     Repositorio db;
+    public int index;
 
     public static PlaceholderFragment newInstance(int index) {
         PlaceholderFragment fragment = new PlaceholderFragment();
@@ -70,6 +72,7 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
             index = getArguments().getInt(ARG_SECTION_NUMBER);
         }
         pageViewModel.setIndex(index);
+        this.index = index;
     }
 
     @Override
@@ -102,6 +105,12 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
         getDataRetro();
 
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getContext(), contryList.get(position).toString(), Toast.LENGTH_LONG).show();
+            }
+        });
 
         return root;
     }
@@ -124,10 +133,14 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
     }
 
 
-    private void getDataSqlite() {
+    private void getDataSqlite(int index) {
         contryList.clear();
-        contryList.addAll(db.listarPaises());
+        contryList.addAll(db.listarPaises(index));
         adapter.notifyDataSetChanged();
+    }
+
+    private int getIndex(){
+        return this.index;
     }
 
     public void getDataRetro() {
@@ -145,7 +158,14 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
                         db.excluirAll();
 
                         for (Countries country : countryBody) {
-                            contryList.add(country);
+                            //}
+                            if(getIndex() == 2){
+                                if(country.region.equals("South America"))
+                                contryList.add(country);
+                            } else{
+                                contryList.add(country);
+
+                            }
                             db.inserir(country);
                         }
                         adapter.notifyDataSetChanged();
@@ -166,7 +186,8 @@ public class PlaceholderFragment extends Fragment implements SwipeRefreshLayout.
         }else {
             swiperefresh.setRefreshing(false);
             Toast.makeText(getContext(),"Sem Conexão, listando Ubs do banco...",Toast.LENGTH_SHORT).show();
-            getDataSqlite();
+            getDataSqlite(index);
+
         }
 
     }

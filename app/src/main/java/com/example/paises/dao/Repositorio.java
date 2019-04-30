@@ -44,8 +44,11 @@ public class Repositorio {
         db.close();
     }
 
-    public List<Countries> listarPaises() {
+    public List<Countries> listarPaises(int index) {
         String sql = "SELECT * FROM " + SQLHelper.COUNTRY_TABLE;
+        if(index == 2){
+            sql += " WHERE region = 'South America'";
+        }
         db = helper.getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
         List<Countries> list = new ArrayList();
